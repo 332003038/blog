@@ -11,9 +11,16 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
+
 Route::get('/', function () {
     return view('welcome');
 });
 
 //后台登陆路由
 Route::get('admin/login','Admin\LoginController@login');
+//验证码路由
+Route::get('admin/code','Admin\LoginController@code');
+// 使用composer包下载的验证码路由
+// Route::get('/code/captcha/{tmp}', 'Admin\LoginController@captcha');
