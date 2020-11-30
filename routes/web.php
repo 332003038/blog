@@ -18,9 +18,25 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-//后台登陆路由
-Route::get('admin/login','Admin\LoginController@login');
-//验证码路由
-Route::get('admin/code','Admin\LoginController@code');
-// 使用composer包下载的验证码路由
-// Route::get('/code/captcha/{tmp}', 'Admin\LoginController@captcha');
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    //后台登陆路由
+    Route::get('login', 'LoginController@login');
+    //验证码路由
+    Route::get('code', 'LoginController@code');
+    // 使用composer包下载的验证码路由
+    // Route::get('/code/captcha/{tmp}', 'Admin\LoginController@captcha');
+    //后台登陆表单提交路由
+    Route::post('doLogin', 'LoginController@doLogin');
+    //加密算法
+    Route::get('jiami', 'LoginController@jiami');
+});
+
+
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => 'isLogin'], function () {
+    //后台首页路由
+    Route::get('index', 'LoginController@index');
+    //后台欢迎页路由
+    Route::get('welcome', 'LoginController@welcome');
+    //后台退出登陆路由
+    Route::get('logout', 'LoginController@logout');
+});
