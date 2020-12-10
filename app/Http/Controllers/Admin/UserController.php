@@ -4,11 +4,53 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Model\Role;
 use App\Model\User;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
+
+    //获取用户拥有的角色列表
+    public function auth($id)
+    {
+        //1.根据用户id查询出的所有数据
+        $user = User::find($id);
+        //2.从角色表中，查询出所有角色列表
+        $roles = Role::get();
+        //3.根据用户id，从用户角色中间表中查找出用户有哪些角色
+        $user_roles =$user->Role;
+        //dd($user_roles);
+        //4.遍历用户拥有的所有角色，获取拥有的角色id，放进arry()数组
+        $user_role =[];
+        foreach ($user_roles as $v) {
+            //将循环出来的角色id($V->id)放入数组的值中
+            $user_role[] = $v->id;
+        }
+
+        //返回用户授于角色列页面
+        return view('admin.user.auth',compact('user','roles','user_role'));
+    }
+
+    //执行用户授于角色方法
+    public function doAuth(Request $request)
+    {
+        //1.从表单获取到用户名称、用户id、角色id数组   
+        $input = $request->except('_token');
+        //dd($input);
+        //2.删除用户已经拥有的角色
+        //从中间表user_role中user_id字段中查询出表单提交过来的$input['user_id']，进行删除
+        DB::table('user_role')->where('user_id',$input['user_id'])->delete();
+        //3.循环表单提交过来的角色id数组，每次循环出一个角色id，则向中间表user_role中插入一条用户id对应的角色id
+        if (!empty($input['role_id'])) {
+            foreach($input['role_id'] as $v){
+                DB::table('user_role')->insert(['user_id' => $input['user_id'],'role_id' => $v]);           
+            }
+        }
+        return redirect('admin/user');
+    }
+
     /**
      * Display a listing of the resource.
      *

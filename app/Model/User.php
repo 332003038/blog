@@ -19,4 +19,10 @@ class User extends Model
 
     //4.是否维护crated_at和updated_at字段
     public $timestamps = false;
+
+    public function role()
+    {
+        //belongsToMany(被关联的模型，中间表名，当前模型在中间表中的主键， 被关联模型在中间表中的主键）
+        return $this->belongsToMany('App\Model\Role','user_role','user_id','role_id');
+    }
 }

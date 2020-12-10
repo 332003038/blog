@@ -31,8 +31,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
     Route::get('jiami', 'LoginController@jiami');
 });
 
+Route::get('noaccess','Admin\LoginController@noaccess');
 
-Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => 'isLogin'], function () {
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => ['hasRole','isLogin']], function () {
     //后台首页路由
     Route::get('index', 'LoginController@index');
     //后台欢迎页路由
@@ -41,7 +42,22 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'middleware' => 'isLo
     Route::get('logout', 'LoginController@logout');
 
     //批量删除用户路由
-    Route::get('user/del', 'UserController@delAll');    
+    Route::get('user/del', 'UserController@delAll');
     //后台用户模块相关路由
-    Route::resource('user','UserController');
+    Route::resource('user', 'UserController');
+
+    //用户授于角色路由
+    Route::get('user/auth/{id}', 'UserController@auth');
+   //处理用户授于角色路由
+    Route::post('user/doauth', 'UserController@doAuth'); 
+
+    //角色授权路由
+    Route::get('role/auth/{id}', 'RoleController@auth');
+    //处理角色授权路由
+    Route::post('role/doauth', 'RoleController@doAuth');
+    //后台角色模块相关路由
+    Route::resource('role', 'RoleController');
+
+    //后台权限模块相关路由
+    Route::resource('permission', 'PermissionController');
 });
